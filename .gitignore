@@ -1,0 +1,15 @@
+# venv y cachés
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+
+# SO
+.DS_Store
+
+# Datos locales y modelos temporales
+data/*
+!data/.gitkeep
+
+# Opcional: no ignores el modelo si quieres deploy inmediato
+# model.joblib
