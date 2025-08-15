@@ -68,9 +68,9 @@ cd ml-gallstones-app
 
 ### 2. Create virtual environment
 python -m venv .venv
-# Activate (Windows)
+#### Activate (Windows)
 .venv\Scripts\Activate.ps1
-# Activate (macOS/Linux)
+#### Activate (macOS/Linux)
 source .venv/bin/activate
 
 ### 3. Install dependencies
@@ -85,7 +85,7 @@ This will overwrite model.joblib.
 ### 5. Run the app
 streamlit run app.py
 
-### 📤 Deployment on Streamlit Cloud
+## 📤 Deployment on Streamlit Cloud
 
 Push this repository to GitHub.
 
@@ -101,20 +101,9 @@ Main file path: app.py
 
 Deploy and get your public URL.
 
-📊 Example Inputs
-High risk case (likely positive):
 
-Age: 62, BMI: 33.8, VFA: 160.0, Glucose: 145, HDL: 35, LDL: 185, TG: 260, Vitamin D: 14, ALT: 78, AST: 52
-
-Low risk case (likely negative):
-
-Age: 28, BMI: 22.1, VFA: 35.0, Glucose: 88, HDL: 58, LDL: 95, TG: 90, Vitamin D: 32, ALT: 22, AST: 20
-
-📜 License
+## 📜 License
 
 This project is for educational and demonstration purposes only.
 It is not a substitute for professional medical diagnosis or advice.
 
-👩‍💻 Author
-
-Developed by [Your Name] as part of the COMEXUS / University of Arizona AI Fellowship.
