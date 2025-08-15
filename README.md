@@ -1,6 +1,6 @@
-# 🩺 Gallstone Risk Prediction – COMEXUS / University of Arizona AI Fellowship
+# 🩺 Gallstone Risk Prediction – Beca + Talento Chihuahua COMEXUS / University of Arizona AI Program
 
-This project was developed as the **final capstone** of the COMEXUS Fellowship at the **University of Arizona**, a program focused on **Artificial Intelligence** and its applications in solving real-world problems.
+This project was developed as the **final capstone** of the **Beca + Talento Chihuahua** program at the **University of Arizona**, a specialized academic experience focused on **Artificial Intelligence** and its real-world applications.
 
 The goal is to predict the **probability of gallstone presence** using **supervised Machine Learning** (Logistic Regression) trained on **clinical and biochemical data**.
 
@@ -66,29 +66,26 @@ You can try the app here: **[Live Streamlit App](https://YOUR-APP-URL.streamlit.
 git clone https://github.com/YOUR_USERNAME/ml-gallstones-app.git
 cd ml-gallstones-app
 
-2. Create virtual environment
+### 2. Create virtual environment
 python -m venv .venv
 # Activate (Windows)
 .venv\Scripts\Activate.ps1
 # Activate (macOS/Linux)
 source .venv/bin/activate
 
-3. Install dependencies
+### 3. Install dependencies
 pip install -r requirements.txt
 
-4. (Optional) Retrain the model
-
+### 4. (Optional) Retrain the model
 If you want to retrain the model using your own dataset, place it in data/ and run:
-
 python train.py
-
 
 This will overwrite model.joblib.
 
-5. Run the app
+### 5. Run the app
 streamlit run app.py
 
-📤 Deployment on Streamlit Cloud
+### 📤 Deployment on Streamlit Cloud
 
 Push this repository to GitHub.
 
