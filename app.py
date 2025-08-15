@@ -17,18 +17,23 @@ def predict_proba(pipeline, df_features: pd.DataFrame) -> np.ndarray:
     proba = pipeline.predict_proba(X)[:, 1]
     return proba
 
-st.title("🩺 Gallstone Status – Logistic Regression App")
-st.write("Mini‑app para predecir **Gallstone Status** con tu modelo de Regresión Logística.")
+st.title("🩺 Gallstone Risk Prediction – COMEXUS / University of Arizona AI Fellowship")
+st.write(
+    "This application was developed as the final project of the COMEXUS Fellowship at the University of Arizona, "
+    "a program focused on Artificial Intelligence and its applications. "
+    "It implements a supervised Machine Learning model trained on clinical and biochemical data "
+    "to estimate the probability of gallstone presence."
+)
 
 pipeline, default_threshold = load_model()
 
-tabs = st.tabs(["📄 Predicción individual", "📥 Batch por CSV"])
+tabs = st.tabs(["📄 Individual Prediction", "📥 Batch via CSV"])
 
 # ====== TAB 1: FORM ======
 with tabs[0]:
-    st.subheader("Completa los campos mínimos (o sube un CSV en la otra pestaña)")
+    st.subheader("Fill in the required fields (or upload a CSV in the other tab)")
 
-    st.write("**Datos demográficos básicos:**")
+    st.write("**Basic demographic data:**")
     col1, col2 = st.columns(2)
     with col1:
         age = st.number_input("Age", min_value=0, max_value=120, value=50)
@@ -42,7 +47,7 @@ with tabs[0]:
         hyperlipidemia = st.selectbox("Hyperlipidemia (0/1)", [0, 1], index=0)
         dm = st.selectbox("Diabetes Mellitus (DM) (0/1)", [0, 1], index=0)
 
-    st.write("**Composición corporal:**")
+    st.write("**Body composition:**")
     col1, col2, col3 = st.columns(3)
     with col1:
         bmi = st.number_input("Body Mass Index (BMI)", min_value=5.0, max_value=80.0, value=27.0, step=0.1)
@@ -64,7 +69,7 @@ with tabs[0]:
         vma = st.number_input("Visceral Muscle Area (VMA) (Kg)", min_value=0.0, max_value=100.0, value=10.6, step=0.1)
         hfa = st.number_input("Hepatic Fat Accumulation (HFA)", min_value=0.0, max_value=10.0, value=0.0, step=0.1)
 
-    st.write("**Parámetros bioquímicos:**")
+    st.write("**Biochemical parameters:**")
     col1, col2, col3 = st.columns(3)
     with col1:
         glucose = st.number_input("Glucose", min_value=40.0, max_value=800.0, value=102.0, step=1.0)
@@ -126,60 +131,61 @@ with tabs[0]:
     }
     df_single = pd.DataFrame([input_row])
 
-    # Aplicar mismo FE
-    df_single = convert_commas_to_dots(df_single)  # inerte aquí, por consistencia
+    # Apply same FE
+    df_single = convert_commas_to_dots(df_single)  # inert here for consistency
     df_feat = make_features(df_single)
 
     thr = st.slider("Threshold", 0.10, 0.90, float(default_threshold), 0.01,
-                    help="Umbral para convertir probabilidad en clase (1=riesgo)")
+                    help="Threshold to convert probability into class (1 = risk)")
 
-    if st.button("Predecir"):
+    if st.button("Predict"):
         proba = predict_proba(pipeline, df_feat)[0]
         pred = int(proba >= thr)
 
-        st.metric("Probabilidad de Gallstone (1)", f"{proba*100:.1f}%")
-        st.write(f"**Predicción:** {pred}  (0 = No, 1 = Sí)")
-        st.info("Recuerda: esta app es con fines educativos/demostrativos. No sustituye criterio médico.")
+        st.metric("Gallstone Probability (1)", f"{proba*100:.1f}%")
+        st.write(f"**Prediction:** {pred}  (0 = No, 1 = Yes)")
+        st.info("Note: This app is for educational/demonstration purposes only. It is not a substitute for medical advice.")
 
-# ====== TAB 2: CSV ======
-with tabs[1]:
-    st.subheader("Sube un CSV con las mismas columnas originales (incluye o no el target)")
-    file = st.file_uploader("CSV", type=["csv"])
-    thr = st.slider("Threshold (batch)", 0.10, 0.90, float(default_threshold), 0.01)
+    # ====== TAB 2: CSV ======
+    with tabs[1]:
+        st.subheader("Upload a CSV with the same original columns (target column optional)")
+        file = st.file_uploader("CSV", type=["csv"])
+        thr = st.slider("Threshold (batch)", 0.10, 0.90, float(default_threshold), 0.01)
 
-    if file is not None:
-        df = pd.read_csv(file)
-        # Convertir decimales con comas si aplica
-        df = convert_commas_to_dots(df)
-        # Guardamos si trae target para comparar
-        y_true = df["Gallstone Status"].values if "Gallstone Status" in df.columns else None
+        if file is not None:
+            df = pd.read_csv(file)
+            # Convert decimals with commas if applicable
+            df = convert_commas_to_dots(df)
+            # Save target if present for comparison
+            y_true = df["Gallstone Status"].values if "Gallstone Status" in df.columns else None
 
-        df_feat = make_features(df)
-        proba = predict_proba(pipeline, df_feat)
-        pred = (proba >= thr).astype(int)
+            df_feat = make_features(df)
+            proba = predict_proba(pipeline, df_feat)
+            pred = (proba >= thr).astype(int)
 
-        out = df.copy()
-        out["proba_1"] = proba
-        out["pred"] = pred
+            out = df.copy()
+            out["proba_1"] = proba
+            out["pred"] = pred
 
-        st.write("Vista previa de resultados:")
-        st.dataframe(out.head(20))
+            st.write("Preview of results:")
+            st.dataframe(out.head(20))
 
-        if y_true is not None:
-            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
-            # Para ROC AUC, si solo hay una clase presente, manejamos excepción
-            try:
-                auc = roc_auc_score(y_true, proba)
-            except Exception:
-                auc = np.nan
-            acc = accuracy_score(y_true, pred)
-            prec = precision_score(y_true, pred, zero_division=0)
-            rec = recall_score(y_true, pred, zero_division=0)
-            f1 = f1_score(y_true, pred, zero_division=0)
+            if y_true is not None:
+                from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+                # For ROC AUC, handle exception if only one class present
+                try:
+                    auc = roc_auc_score(y_true, proba)
+                except Exception:
+                    auc = np.nan
+                acc = accuracy_score(y_true, pred)
+                prec = precision_score(y_true, pred, zero_division=0)
+                rec = recall_score(y_true, pred, zero_division=0)
+                f1 = f1_score(y_true, pred, zero_division=0)
 
-            st.markdown("**Métricas (comparado contra tu columna Gallstone Status):**")
-            st.write(f"- Accuracy:  {acc:.3f}")
-            st.write(f"- Precision: {prec:.3f}")
-            st.write(f"- Recall:    {rec:.3f}")
-            st.write(f"- F1-score:  {f1:.3f}")
-            st.write(f"- ROC-AUC:   {auc:.3f if not np.isnan(auc) else 'NA'}")
+                st.markdown("**Metrics (compared to your Gallstone Status column):**")
+                st.write(f"- Accuracy:  {acc:.3f}")
+                st.write(f"- Precision: {prec:.3f}")
+                st.write(f"- Recall:    {rec:.3f}")
+                st.write(f"- F1-score:  {f1:.3f}")
+                st.write(f"- ROC-AUC:   {auc:.3f if not np.isnan(auc) else 'NA'}")
+
