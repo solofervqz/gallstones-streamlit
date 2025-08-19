@@ -7,6 +7,21 @@ from features import convert_commas_to_dots, make_features, split_X_y
 
 st.set_page_config(page_title="Gallstone Predictor", page_icon="🩺", layout="centered")
 
+# Configurar tema blanco con CSS personalizado
+st.markdown("""
+<style>
+    .stApp {
+        background-color: white;
+    }
+    .main .block-container {
+        background-color: white;
+    }
+    [data-testid="stSidebar"] {
+        background-color: #f0f2f6;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 @st.cache_resource
 def load_model():
     bundle = joblib.load("model.joblib")
